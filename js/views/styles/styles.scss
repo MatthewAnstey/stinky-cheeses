@@ -1,0 +1,72 @@
+@import 'vendor/reset';
+@import 'vendor/bootstrap-grid';
+
+body {
+    font-size: 18px;
+    font-family: arial;
+}
+strong {
+    font-weight: bold;
+}
+h1,
+h2,
+h3 {
+    font-family: helvetica;
+    margin: 0 0 20px 0;
+}
+h1 {
+    color : #eee;
+    background: #4267b2;
+    padding: 10px;
+    font-size: 38px;
+}
+h2 {
+    font-size: 20px;
+    font-weight: bold;
+}
+button {
+    font-size: 15px;
+    cursor: pointer;
+    background: #4267b2;
+    border-radius: 5px;
+    padding: 10px;
+    color: white;
+}
+input {
+    font-size: 15px;
+    border: 1px solid #4267b2;
+    padding: 3px;
+    height: 33px;
+}
+section {
+    background: #e9ebee;
+    padding: 20px;
+    margin: 10px;
+}
+.all-the-tasks {
+    margin-top: 30px;
+}
+.heading {
+    text-align: center;
+}
+.add-a-task-btn {
+    margin-top: 15px;
+}
+.row-fluid {
+    margin-top: 10px;
+}
+.edit-score,
+.task-score {
+    width: 50px;
+    text-align: center;
+}
+.task-name {
+    width: 100%;
+}
+@media (max-width: 600px) {
+    .row-fluid .mobile-grid {
+        width: 100%;
+        margin-left: 0;
+    }
+}
+

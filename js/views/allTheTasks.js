@@ -1,5 +1,5 @@
 import { View } from 'backbone';
-import TaskRow from 'views/allTheTasks/row';
+import TaskRow from 'views/allTheTasks/rowTask';
 
 class allTheTasks extends View {
     events() {

@@ -2,7 +2,7 @@ import _ from 'underscore';
 import $ from 'jquery';
 import { View } from 'backbone';
 
-class addATask extends View {
+class rowTask extends View {
     taskTemplate() {
         return '<div class="span6 mobile-grid"> <%- name %> </div>' +
             '<div class="span2 mobile-grid"><input value=" <%- score %>" class="js-edit-score edit-score"></div>' +
@@ -43,4 +43,4 @@ class addATask extends View {
     }
 }
 
-export default addATask;
+export default rowTask;

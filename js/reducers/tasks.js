@@ -1,4 +1,4 @@
-const task (state = {}, action) => {
+const task = (state = {}, action) => {
     switch (action.type) {
         case 'ADD_TASK':
             return {
@@ -11,19 +11,35 @@ const task (state = {}, action) => {
     }
 }
 
-const tasks (state = {}, action) => {
+const tasks = (state = [], action) => {
     switch (action.type) {
         case 'ADD_TASK':
-            return state.tasks.map(t => task(t, action));
+            return [...state, task(undefined, action)]
         case 'REMOVE_TASK':
-            return state.tasks.filter((t) => t.id !== action.id);
-        case 'SET_ORDER_OF PRIORITY':
-            return Object.assign({}, state, {
-                orderOfPriority: action.orderOfPriority
+            return state.filter((t) => t.id !== action.id);
+        case 'TOGGLE_ORDER_TASKS':
+            return [...state].reverse();
+        case 'EDIT_TASK':
+            return state.map((t) => {
+                if (t.id === action.id) {
+                    t.name = action.name;
+                    return t;
+                } else {
+                    return t;
+                }
+            });
+        case 'EDIT_PRIORITY':
+            return state.map((t) => {
+                if (t.id === action.id) {
+                    t.priority = action.priority;
+                    return t;
+                } else {
+                    return t;
+                }
             });
         default:
             return state;
     }
 }
 
-export default tasks;
+export default tasks

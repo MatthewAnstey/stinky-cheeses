@@ -1,117 +1,136 @@
-import reducers from './reducers/index';
-import {createStore} from 'redux';
-import {editTask, addTask, removeTask, editPriority, toggleOrderTasks} from './actions/index';
 import { Component } from 'react';
 import React from 'react';
 import { render } from "react-dom";
+import dummyData from './models/dummy-data';
+import dummyData2 from './models/dummy-data2';
+import './views/styles/styles.scss';
 
-let store = createStore(reducers);
+var toggle = true;
 
 
-store.dispatch(addTask('Pick Kens Nose', 4));
-store.dispatch(addTask('Pick Kens Ear', 3));
-store.dispatch(addTask('Pick Kens Eye', 2));
-store.dispatch(addTask('Pick Kens Bum', 1));
-
-store.dispatch(toggleOrderTasks());
-store.dispatch(toggleOrderTasks());
-
-class Wrapper extends Component {
+class ButtonWrapper extends Component {
     render () {
-        return (
-            <div>
-                <AddKensTask />
-                <KensTaskWrapper tasks={store.getState().tasks} />
-            </div>
-        )
+        return <div><button onClick={this.initialRender.bind(this)}>Update Results</button></div>
+    }
+    initialRender () {
+      var data = toggle ? dummyData : dummyData2;
+      this.toggle  = !toggle;
+
+      render(<ResultsWrapper dummyData={data} />, document.getElementById('js-header'));
+
+    }
+    componentDidMount () {
+      this.setState({'results' : toggle});
     }
 }
 
 
-class AddKensTask extends Component {
+class ResultsWrapper extends Component {
+    constructor(props) {
+        this.competitions = [];
+        this.setCompetitions(props);
+        this.fixtureDate = props.dummyData.results[0].fixtureDate;
+        this.competition = props.dummyData.results[0].competition;
+        this.ageGroup =  props.dummyData.ageGroup;
+    }
+    setCompetitions (props) {
+        props.dummyData.results.map((groupOfResults) => {
+          this.competitions.push(<CompetitionWrapper competition={groupOfResults.competition}
+              fixtureDate={groupOfResults.fixtureDate}
+              ageGroup={groupOfResults.ageGroup} />);
+        });
+    }
     render () {
         return (
-            <form onSubmit={this.addTask.bind(this)}>
-                <label>
-                    Task
-                    <input type="text" name="task" onChange={this.setInputValue.bind(this)} />
-                </label>
-                <label>
-                    Priority
-                    <input type="number" name="priority" onChange={this.setInputValue.bind(this)} />
-                </label>
-                <button>Add A Task</button>
-            </form>
+          <div>
+             <ButtonWrapper />
+             {this.competitions}
+          </div>
         )
     }
-    setInputValue (evt) {
-        this[evt.currentTarget.name] = evt.currentTarget.value;
+}
+class CompetitionWrapper extends Component {
+    constructor (props) {
+        this.i = 0;
+        this.rows = [];
+        this.setUpRows(props);
     }
-    addTask (evt) {
-        evt.preventDefault();
-        if (this.task !== '' && this.priority !== '') {
-            store.dispatch(addTask(this.task, this.priority));
-            this.resetFormsValue(evt.currentTarget);
-        }
+    setUpRows (props) {
+      if (props.ageGroup) {
+          this.rows.push(<NormalHeader key={this.i++} header={props.ageGroup} className="ageGroupHeader" />);
+      }
+
+      if (props.fixtureDate) {
+          this.rows.push(<NormalHeader key={this.i++} header={props.fixtureDate} className="dateHeader" />);
+      }
+
+      props.competition.map((obj) => {
+          this.rows.push(<NormalHeader key={this.i++} header={obj.competitionName} />);
+          obj.groupOrRound.map((round) => {
+              if (round.groupOrRoundName) {
+                  this.rows.push(<NormalHeader key={this.i++} header={round.groupOrRoundName} className="dateHeader" />)
+              }
+              round.result.map((score) => {
+                  this.rows.push(<Score score={score} key={this.i++} />)
+
+                    if (score.outcome) {
+                         this.rows.push(<NormalRow header={score.outcome} />);
+                    }
+              });
+          });
+       });
     }
-    resetFormsValue (elm) {
-        elm.reset();
-        this.task = '';
-        this.priority = '';
+    render () {
+        return (
+            <table width="800px">
+                <tbody>
+                    {this.rows}
+                </tbody>
+            </table>
+          );
     }
 }
 
-
-class KensTaskWrapper extends Component {
+class NormalHeader extends Component {
     render () {
         return (
-            <div>
-                <h1>All your tasks!</h1>
-                {this.props.tasks.map((task) => (
-                    <div key={task.id}>
-                       <KensTask  task={task} />
-                       <KensPriority task={task} />
-                    </div>
-                ))}
-            </div>
+          <tr>
+              <th className={this.props.className}>{this.props.header}</th>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+          </tr>
         )
-    }
-};
-
-class KensTask extends Component {
-    render () {
-        return (
-            <div>
-                <input type="text"
-                    value={this.props.task.name}
-                    onChange={this.editTask.bind(this)} />
-            </div>
-        )
-    }
-    editTask (evt) {
-        store.dispatch(editTask(evt.currentTarget.value, this.props.task.id));
-    }
-};
-
-class KensPriority extends Component {
-    render () {
-        return (
-            <div>
-                <input type="text" value={this.props.task.priority}
-                    onChange={this.editPriority.bind(this)} />
-            </div>
-        )
-    }
-    editPriority (evt) {
-        store.dispatch(editPriority(evt.currentTarget.value, this.props.task.id));
     }
 }
 
-const taskRender = () => {
-    render(<Wrapper />,
-        document.getElementById('reactTasks')
-    );
+class NormalRow extends Component {
+    render () {
+        return (
+          <tr>
+              <td className={this.props.className}>{this.props.header}</td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+          </tr>
+        )
+    }
 }
 
-let unsubscribe = store.subscribe(taskRender);
-taskRender();
+class Score extends Component {
+    render () {
+        return (
+          <tr>
+            <td className="home" width="32%">{this.props.score.homeTeam}</td>
+            <td className="goals" width="5%">{this.props.score.homeGoals}</td>
+            <td className="goals" width="5%">{this.props.score.awayGoals}</td>
+            <td className="away"  width="32%">{this.props.score.awayTeam}</td>
+            <td className="notes">{this.props.score.resultNote}</td>
+          </tr>
+        )
+    }
+}
+
+render(<ButtonWrapper />, document.getElementById('js-header'));
